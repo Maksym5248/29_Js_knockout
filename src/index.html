@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/node_modules/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" href="/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/node_modules/toastr/build/toastr.min.css">
+    <link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbarCollapsed">
+                        <span class="glyphicon glyphicon-tasks toggleIcon--modified"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">ZaxidNetClone</a>
+                </div>
+                <div class="collapse navbar-collapse" id="navbarCollapsed">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#"><span class="glyphicon glyphicon-user"></span>
+                            Автори та статті</a>
+                        </li>
+                        <li><a href="#">Анонси</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <img class="img-rounded navImg" src="images/200x100.png" alt="Avatar">
+                        </li>
+                        <li>
+                            <p class="navbar-text">Привіт, <a href="#" class="navbar-link text--capital">ім'я
+                                користувача</a>
+                            </p>
+                        </li>
+                        <li>
+                            <a href="#"><span class="glyphicon glyphicon-off"></span>
+                                Вийти</a>
+                        </li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+        <div class="page-header">
+            <h1>Панель управління авторами і статтями</h1>
+        </div>
+    </header>
+    <div class="row">
+        <aside class="col-xs-4">
+            <form id="form-allUsers">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Автори
+                        <a href="#" id="btn-create" type="button" data-bind="click: addNewUser"><span class="glyphicon glyphicon-plus"></span></a>
+                        <div class="btn-group btn-group-xs pull-right">
+                            <button class="btn btn-danger" id="delete" data-bind="click: removeSelectedUser, enable: canRemoveSelectedUser"><span class="glyphicon glyphicon-trash"></span>
+                                Видалити
+                            </button>
+                            <button class="btn btn-warning"><span class="glyphicon glyphicon-ban-circle"></span>
+                                Забанити
+                            </button>
+                        </div>
+                    </div>
+                    <ul class="media-list list-group" id="ul-parent" data-bind="foreach: previews">
+                        <li class="media list-group-item list-group-item-warning" data-bind="click: $parent.editUser, css: {active: $parent.selectedUser() && $parent.selectedUser().id() === $data.id}">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object listImg thumbnail" src="images/200x200.png" alt="..." data-bind="attr: {src: photo, alt:fullName}">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">
+                                <span class="badge pull-right" data-bind="text: country"></span><!--   чому не завантажується ? -->
+                                <span class="text--capital" data-bind="text: fullName"></span>
+                            </h4>
+                            <span class="label label-warning">Запит на публікацію</span>
+                        </div>
+                        </li>
+                    </ul>
+                    <div class="panel-footer">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination" id="navigation-parent">
+                                <li data-bind="css: {disabled: currentPage() === 1}">
+                                    <a href="#" data-bind="click: goToPrevPage">
+                                        <i class="glyphicon glyphicon-arrow-left"></i>
+                                    </a>
+                                </li>
+                                <!-- ko foreach: pagesNumbers -->
+                                <li data-bind="css: {active: $parent.currentPage() === $data}">
+                                    <a href="#" data-bind="text: $data, click: $parent.goToPage, attr: {id:$data}"></a>
+                                </li>
+                                <!-- /ko -->
+                                <li data-bind="css: {disabled: currentPage() === totalPages()}">
+                                    <a href="#" data-bind="click: goToNextPage">
+                                        <i class="glyphicon glyphicon-arrow-right"></i>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </form>
+        </aside>
+        <main class="col-xs-8">
+            <form name="form_hide" id="form-hide" action="#" data-bind="with: selectedUser, submit: handleSaveUser">
+                <input class="hidden" type="file" id="openFileDialogElement" data-bind="event: {change: $parent.upLoadImg}">
+                <div class="row form-group">
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <label for="#photo" class="col-xs-4">Фото</label>
+                            <div class="col-xs-8">
+                                <a href="#" id="#photo" data-bind="click: $parent.openFileDialog">
+                                    <img src="" alt="Photo"class="thumbnail photoImg" id="img-photo" data-bind="attr: {src: photo, alt:fullName}">
+                                    <span class="glyphicon glyphicon-transfer"></span>
+                                    Змінити
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <label for="fio" class="col-xs-4">ФІО</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="fio" data-bind="value: fullName">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="address" class="col-xs-4">Адреса</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="address" name="address" data-bind="value: address">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="type" class="col-xs-4">Країна</label>
+                            <div class="col-xs-8">
+                                <select class="form-control" id="type" data-bind="options: $parent.countries, value: country">
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="profession" class="col-xs-4">Професія</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="profession" name="profession" data-bind="value: profession">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-xs-6">
+                         <div class="form-group">
+                             <label for="birthday" class="col-xs-4">Дата народження</label>
+                             <div class='input-group date' style="position: relative;">
+                                 <input type='text' class="form-control" id='birthday' name="birthday" data-bind="value: birthday">
+                                 <span class="input-group-addon">
+                                     <span class="glyphicon glyphicon-calendar"></span>
+                                 </span>
+                             </div>
+                         </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <label for="email" class="col-xs-4">Email</label>
+                            <div class="col-xs-8">
+                                <input type="email" class="form-control" id="email" data-bind="value: email"><!-- -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-xs-12">
+                        <div class="field-row">
+                            <label for="short-info">ShortInfo:</label>
+                            <textarea name="short_info" id="short-info" data-bind="value: shortInfo"></textarea><!-- -->
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-xs-12">
+                        <div class="field-row">
+                            <label for="full-info">DetailedInfo:</label>
+                            <textarea name="full_info" id="full-info" data-bind="value: fullInfo"></textarea><!-- -->
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-xs-12">
+                        <div class="btn-group pull-right">
+                            <button class="btn btn-primary"><span class="glyphicon glyphicon-floppy-save"></span>
+                                Зберегти
+                            </button>
+                            <button class="btn btn-default" id="btn-cancel" data-bind="click: $parent.cancelSelection" >Скасувати</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+<script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="/node_modules/moment/min/moment.min.js"></script>
+<script type="text/javascript" src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+
+<script src="/node_modules/knockout/build/output/knockout-latest.debug.js"></script>
+<script src="/node_modules/toastr/build/toastr.min.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
